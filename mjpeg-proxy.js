@@ -33,7 +33,7 @@ function extractBoundary(contentType) {
       endIndex = contentType.length;
     }
   }
-  return contentType.substring(startIndex + 9, endIndex);
+  return contentType.substring(startIndex + 9, endIndex).replace(/"/gi,'');
 }
 
 var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
