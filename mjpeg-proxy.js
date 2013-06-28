@@ -109,7 +109,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
       });
 
       mjpegRequest.on('error', function(e) {
-        console.log('problem with request: ', e);
+        console.error('problem with request: ', e);
       });
       mjpegRequest.end();
     }
