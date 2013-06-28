@@ -57,6 +57,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
     } else {
       // Send source MJPEG request
       var mjpegRequest = http.request(self.mjpegOptions, function(mjpegResponse) {
+        // console.log('request');
         self.globalMjpegResponse = mjpegResponse;
         self.boundary = extractBoundary(mjpegResponse.headers['content-type']);
 
@@ -126,7 +127,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
     self.audienceResponses.push(res);
     self.newAudienceResponses.push(res);
 
-    res.socket.on('close', function () {
+    req.socket.on('close', function () {
       // console.log('exiting client!');
 
       self.audienceResponses.splice(self.audienceResponses.indexOf(res), 1);

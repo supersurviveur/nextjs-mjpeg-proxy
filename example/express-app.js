@@ -22,6 +22,7 @@
 var MjpegProxy = require('../mjpeg-proxy').MjpegProxy;
 var express = require('express');
 var app = express();
+
 var HTTP_PORT = 8080;
 
 var cam1 = "http://admin:admin@192.168.124.54/cgi/mjpg/mjpg.cgi";
@@ -35,4 +36,4 @@ app.get('/index2.jpg', new MjpegProxy(cam2).proxyRequest);
 
 app.listen(HTTP_PORT);
 
-console.log("Listening on port "+HTTP_PORT);
+console.log("Listening on port " + HTTP_PORT);
