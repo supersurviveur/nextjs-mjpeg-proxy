@@ -89,9 +89,10 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
             // First time we push data... lets start at a boundary
             if (self.newAudienceResponses.indexOf(res) >= 0) {
               var p = chunk.indexOf('--' + self.boundary); // indexOf provided by buffertools
-              res.write(chunk.slice(p));
-
-              self.newAudienceResponses.splice(self.newAudienceResponses.indexOf(res), 1); // remove from new
+              if (p >= 0) {
+                res.write(chunk.slice(p));
+                self.newAudienceResponses.splice(self.newAudienceResponses.indexOf(res), 1); // remove from new
+              }
             } else {
               res.write(chunk);
             }
