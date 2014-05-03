@@ -48,15 +48,16 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
   self.boundary = null;
   self.globalMjpegResponse = null;
+  self.mjpegRequest = null;
 
   self.proxyRequest = function(req, res) {
 
     // There is already another client consuming the MJPEG response
-    if (self.audienceResponses.length > 0) {
+    if (self.mjpegRequest !== null) {
       self._newClient(req, res);
     } else {
       // Send source MJPEG request
-      var mjpegRequest = http.request(self.mjpegOptions, function(mjpegResponse) {
+      self.mjpegRequest = http.request(self.mjpegOptions, function(mjpegResponse) {
         // console.log('request');
         self.globalMjpegResponse = mjpegResponse;
         self.boundary = extractBoundary(mjpegResponse.headers['content-type']);
@@ -110,10 +111,10 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
         });
       });
 
-      mjpegRequest.on('error', function(e) {
+      self.mjpegRequest.on('error', function(e) {
         console.error('problem with request: ', e);
       });
-      mjpegRequest.end();
+      self.mjpegRequest.end();
     }
   }
 
@@ -137,6 +138,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
       }
 
       if (self.audienceResponses.length == 0) {
+        self.mjpegRequest = null;
         self.globalMjpegResponse.destroy();
       }
     });
