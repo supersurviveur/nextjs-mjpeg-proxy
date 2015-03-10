@@ -13,7 +13,7 @@
   },
   "main": "./mjpeg-proxy",
   "dependencies": {
-    "buffertools": "1.1.x"
+    "buffertools": "^2.1.2"
   },
   "devDependencies": {
     "express": "3.1.x"
