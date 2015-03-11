@@ -1,6 +1,6 @@
 {
   "name": "mjpeg-proxy",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "MJPEG Proxy",
   "author": { 
     "name" : "Georges-Etienne Legendre",
