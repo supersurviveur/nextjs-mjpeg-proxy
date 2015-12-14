@@ -1,7 +1,8 @@
 {
   "name": "mjpeg-proxy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MJPEG Proxy",
+  "license": "MIT",
   "author": { 
     "name" : "Georges-Etienne Legendre",
     "email": "legege@legege.com",
