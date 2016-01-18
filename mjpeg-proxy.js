@@ -25,6 +25,8 @@ var http = require('http');
 var buffertools = require('buffertools');
 
 function extractBoundary(contentType) {
+  contentType = contentType.replace(/\s+/g, '');
+
   var startIndex = contentType.indexOf('boundary=');
   var endIndex = contentType.indexOf(';', startIndex);
   if (endIndex == -1) { //boundary is the last option
