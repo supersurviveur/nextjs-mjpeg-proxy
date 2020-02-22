@@ -124,7 +124,6 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
   }
 
   self._newClient = function(req, res) {
-    console.log(JSON.stringify(req.headers));
     res.writeHead(200, {
       'Expires': 'Mon, 01 Jul 1980 00:00:00 GMT',
       'Cache-Control': 'no-cache, no-store, must-revalidate',
