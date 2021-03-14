@@ -22,8 +22,6 @@
 var url = require('url');
 var http = require('http');
 
-var buffertools = require('buffertools');
-
 function extractBoundary(contentType) {
   contentType = contentType.replace(/\s+/g, '');
 
@@ -74,9 +72,11 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
         mjpegResponse.on('data', function(chunk) {
           // Fix CRLF issue on iOS 6+: boundary should be preceded by CRLF.
+          var buff = Buffer.from(chunk);
           if (lastByte1 != null && lastByte2 != null) {
             var oldheader = '--' + self.boundary;
-            var p = buffertools.indexOf(chunk, oldheader);
+            
+            var p = buff.indexOf(oldheader);
 
             if (p == 0 && !(lastByte2 == 0x0d && lastByte1 == 0x0a) || p > 1 && !(chunk[p - 2] == 0x0d && chunk[p - 1] == 0x0a)) {
               var b1 = chunk.slice(0, p);
@@ -94,7 +94,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
             // First time we push data... lets start at a boundary
             if (self.newAudienceResponses.indexOf(res) >= 0) {
-              var p = buffertools.indexOf(chunk, '--' + self.boundary);
+              var p = buff.indexOf('--' + self.boundary);
               if (p >= 0) {
                 res.write(chunk.slice(p));
                 self.newAudienceResponses.splice(self.newAudienceResponses.indexOf(res), 1); // remove from new
