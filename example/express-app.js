@@ -19,16 +19,21 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-var MjpegProxy = require('../mjpeg-proxy').MjpegProxy;
-var express = require('express');
+const MjpegProxy = require('../mjpeg-proxy').MjpegProxy;
+
+const express = require('express');
+const errorHandler = require('errorhandler');
+const morgan = require('morgan');
+
+const HTTP_PORT = 8080;
+
+const cam1 = "http://192.168.2.31/videostream.cgi?user=admin&pwd=admin";
+const cam2 = "http://192.168.2.30/videostream.cgi?user=admin&pwd=admin";
+
 var app = express();
-
-var HTTP_PORT = 8080;
-
-var cam1 = "http://admin:admin@192.168.124.54/cgi/mjpg/mjpg.cgi";
-var cam2 = "http://admin:@192.168.124.32/videostream.cgi";
-
-app.set("view options", {layout: false});
+app.use(errorHandler({ dumpExceptions: true, showStack: true }));
+app.use(morgan('tiny'));
+app.set("view options", { layout: false });
 app.use(express.static(__dirname + '/public'));
 
 app.get('/index1.jpg', new MjpegProxy(cam1).proxyRequest);

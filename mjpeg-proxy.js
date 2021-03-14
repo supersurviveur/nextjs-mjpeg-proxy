@@ -41,7 +41,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
   if (!mjpegUrl) throw new Error('Please provide a source MJPEG URL');
 
-  self.mjpegOptions = url.parse(mjpegUrl);
+  self.mjpegOptions = new URL(mjpegUrl);
 
   self.audienceResponses = [];
   self.newAudienceResponses = [];
@@ -61,7 +61,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
     } else {
       // Send source MJPEG request
       self.mjpegRequest = http.request(self.mjpegOptions, function(mjpegResponse) {
-        // console.log('request');
+        // console.log(`statusCode: ${mjpegResponse.statusCode}`)
         self.globalMjpegResponse = mjpegResponse;
         self.boundary = extractBoundary(mjpegResponse.headers['content-type']);
 
@@ -80,7 +80,7 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
             if (p == 0 && !(lastByte2 == 0x0d && lastByte1 == 0x0a) || p > 1 && !(chunk[p - 2] == 0x0d && chunk[p - 1] == 0x0a)) {
               var b1 = chunk.slice(0, p);
-              var b2 = new Buffer('\r\n--' + self.boundary);
+              var b2 = Buffer.from('\r\n--' + self.boundary);
               var b3 = chunk.slice(p + oldheader.length);
               chunk = Buffer.concat([b1, b2, b3]);
             }
@@ -144,7 +144,9 @@ var MjpegProxy = exports.MjpegProxy = function(mjpegUrl) {
 
       if (self.audienceResponses.length == 0) {
         self.mjpegRequest = null;
-        self.globalMjpegResponse.destroy();
+        if (self.globalMjpegResponse) {
+          self.globalMjpegResponse.destroy();
+        }
       }
     });
   }
