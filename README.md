@@ -19,20 +19,20 @@ import MjpegProxy from 'nextjs-mjpeg-proxy'
 
 const webcamURL = `http://${process.env.NEXT_PUBLIC_WEBCAM_IP}/mjpg/video.mjpg`
 
-const { proxyRequest } = MjpegProxy(webcamURL)
+const proxy = new MjpegProxy(webcamURL)
 
 export async function GET() {
-    return proxyRequest()
+    return proxy.proxyRequest()
 }
 ```
 
 ## API
 
 ``` js
-const { proxyRequest } = MjpegProxy(mjpegUrl);
+const proxy = new MjpegProxy(webcamURL)
 ``` 
 
-`proxyRequest` is a function returning a web [`Response`](https://developer.mozilla.org/en/docs/Web/API/Response) object.
+`MjpegProxy.proxyRequest` is a method returning a web [`Response`](https://developer.mozilla.org/en/docs/Web/API/Response) object.
 
 ## Credits
 

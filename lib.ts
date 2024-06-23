@@ -15,18 +15,20 @@ function extractBoundary(contentType?: string) {
     return contentType.substring(startIndex + 9, endIndex).replace(/"/gi, '').replace(/^--/gi, '');
 }
 
-export default function MjpegProxy(mjpegUrl: string) {
-    const mjpegOptions = new URL(mjpegUrl)
+export default class MjpegProxy {
+    mjpegOptions: URL
+    audienceResponses: WritableStreamDefaultWriter[] = []
+    boundary: string | null = null
+    globalMjpegResponse: IncomingMessage | null = null
 
-    let audienceResponses: WritableStreamDefaultWriter[] = []
+    constructor(mjpegUrl: string) {
+        this.mjpegOptions = new URL(mjpegUrl)
+    }
 
-    let boundary: string | null = null
-    let globalMjpegResponse: IncomingMessage | null = null
-
-    const _newClient = async (resStream: TransformStream, resolve: (value: any) => void) => {
+    async _newClient(resStream: TransformStream, resolve: (value: any) => void) {
         const writer = resStream.writable.getWriter()
         await writer.ready
-        audienceResponses.push(writer)
+        this.audienceResponses.push(writer)
 
         const res = new Response(resStream.readable, {
             status: 200,
@@ -34,7 +36,7 @@ export default function MjpegProxy(mjpegUrl: string) {
                 'Expires': 'Mon, 01 Jul 1980 00:00:00 GMT',
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
-                'Content-Type': 'multipart/x-mixed-replace;boundary=' + boundary,
+                'Content-Type': 'multipart/x-mixed-replace;boundary=' + this.boundary,
                 'Content-Disposition': 'inline; filename="Webcam-live-Air-Alpin"',
                 'X-Robots-Tag': 'noindex'
             }
@@ -42,53 +44,52 @@ export default function MjpegProxy(mjpegUrl: string) {
         resolve(res)
     }
 
-    const _removeClient = (writer: WritableStreamDefaultWriter) => {
-        audienceResponses.splice(audienceResponses.indexOf(writer), 1);
+    async _removeClient(writer: WritableStreamDefaultWriter) {
+        this.audienceResponses.splice(this.audienceResponses.indexOf(writer), 1);
 
-        if (audienceResponses.length == 0) {
-            if (globalMjpegResponse) {
-                globalMjpegResponse.destroy()
-                globalMjpegResponse = null
+        if (this.audienceResponses.length == 0) {
+            if (this.globalMjpegResponse) {
+                this.globalMjpegResponse.destroy()
+                this.globalMjpegResponse = null
             }
         }
     }
 
-    return {
-        proxyRequest: () => {
-            return new Promise((resolve) => {
-                const resStream = new TransformStream()
-                // There is already another client consuming the MJPEG response
-                if (globalMjpegResponse) {
-                    _newClient(resStream, resolve)
-                } else {
-                    // Send source MJPEG request
-                    request(mjpegOptions, (mjpegResponse) => {
-                        globalMjpegResponse = mjpegResponse
-                        boundary = extractBoundary(mjpegResponse.headers['content-type'])
 
-                        _newClient(resStream, resolve)
+    proxyRequest() {
+        return new Promise((resolve) => {
+            const resStream = new TransformStream()
+            // There is already another client consuming the MJPEG response
+            if (this.globalMjpegResponse) {
+                this._newClient(resStream, resolve)
+            } else {
+                // Send source MJPEG request
+                request(this.mjpegOptions, (mjpegResponse) => {
+                    this.globalMjpegResponse = mjpegResponse
+                    this.boundary = extractBoundary(mjpegResponse.headers['content-type'])
 
-                        mjpegResponse.on('data', async (chunk) => {
-                            for (const audienceResponse of audienceResponses) {
-                                try {
-                                    await audienceResponse.write(chunk)
-                                } catch (Error) {
-                                    // Exception occured : response aborted, remove this client
-                                    _removeClient(audienceResponse)
-                                }
+                    this._newClient(resStream, resolve)
+
+                    mjpegResponse.on('data', async (chunk) => {
+                        for (const audienceResponse of this.audienceResponses) {
+                            try {
+                                await audienceResponse.write(chunk)
+                            } catch (Error) {
+                                // Exception occured : response aborted, remove this client
+                                this._removeClient(audienceResponse)
                             }
-                        })
-                        const end = () => {
-                            audienceResponses.forEach(audienceResponse => {
-                                audienceResponse.close()
-                            })
-                            audienceResponses = []
                         }
-                        mjpegResponse.on('end', end)
-                        mjpegResponse.on('close', end)
-                    }).end()
-                }
-            })
-        }
+                    })
+                    const end = () => {
+                        this.audienceResponses.forEach(audienceResponse => {
+                            audienceResponse.close()
+                        })
+                        this.audienceResponses = []
+                    }
+                    mjpegResponse.on('end', end)
+                    mjpegResponse.on('close', end)
+                }).end()
+            }
+        })
     }
 }
