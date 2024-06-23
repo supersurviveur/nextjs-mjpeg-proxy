@@ -1,6 +1,6 @@
 {
   "name": "nextjs-mjpeg-proxy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MJPEG Proxy for the nextjs app router",
   "license": "MIT",
   "author": {
@@ -8,9 +8,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/supersurviveur/nextjs-mjpeg-proxy.git"
+    "url": "git://github.com/supersurviveur/nextjs-mjpeg-proxy.git"
   },
-  "main": "./mjpeg-proxy",
+  "main": "dist/lib.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@types/node": "^20.14.8"
   }

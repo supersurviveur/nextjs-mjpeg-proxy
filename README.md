@@ -4,13 +4,9 @@ A node.js module to proxy MJPEG requests. Supports multiple client consuming a s
 
 ## Installation
 
-
-From source:
-
-``` bash
-$ git clone https://github.com/supersurviveur/nextjs-mjpeg-proxy
-$ cd nextjs-mjpeg-proxy
-$ npm install
+From npm :
+```bash
+npm install nextjs-mjpeg-proxy
 ```
 
 ## Example
