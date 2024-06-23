@@ -1,24 +1,17 @@
 {
-  "name": "mjpeg-proxy",
-  "version": "0.3.0",
-  "description": "MJPEG Proxy",
+  "name": "nextjs-mjpeg-proxy",
+  "version": "0.1.0",
+  "description": "MJPEG Proxy for the nextjs app router",
   "license": "MIT",
   "author": {
-    "name": "Georges-Etienne Legendre",
-    "email": "legege@legege.com",
-    "url": "http://legege.com"
+    "name": "Julien THILLARD"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/legege/node-mjpeg-proxy.git"
+    "url": "https://github.com/supersurviveur/nextjs-mjpeg-proxy.git"
   },
   "main": "./mjpeg-proxy",
-  "devDependencies": {
-    "errorhandler": "^1.5.1",
-    "express": "4.17.1",
-    "morgan": "^1.10.0"
-  },
-  "engines": {
-    "node": ">=10"
+  "dependencies": {
+    "@types/node": "^20.14.8"
   }
 }
