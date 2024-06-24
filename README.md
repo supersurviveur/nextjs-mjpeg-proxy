@@ -22,7 +22,10 @@ const webcamURL = `http://${process.env.NEXT_PUBLIC_WEBCAM_IP}/mjpg/video.mjpg`
 const proxy = new MjpegProxy(webcamURL)
 
 export async function GET() {
-    return proxy.proxyRequest()
+    return proxy.proxyRequest({
+        'Content-Disposition': 'inline; filename="My webcam"',
+        'X-Robots-Tag': 'noindex'
+    })
 }
 ```
 
@@ -32,7 +35,7 @@ export async function GET() {
 const proxy = new MjpegProxy(webcamURL)
 ``` 
 
-`MjpegProxy.proxyRequest` is a method returning a web [`Response`](https://developer.mozilla.org/en/docs/Web/API/Response) object.
+`MjpegProxy.proxyRequest(customHeaders: HeadersInit = {})` is a method returning a web [`Response`](https://developer.mozilla.org/en/docs/Web/API/Response) object, initialized with a mjpeg stream and custom headers passed in parameter.
 
 ## Credits
 

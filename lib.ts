@@ -25,7 +25,7 @@ export default class MjpegProxy {
         this.mjpegOptions = new URL(mjpegUrl)
     }
 
-    async _newClient(resStream: TransformStream, resolve: (value: any) => void) {
+    async _newClient(resStream: TransformStream, resolve: (value: any) => void, customHeaders: HeadersInit = {}) {
         const writer = resStream.writable.getWriter()
         await writer.ready
         this.audienceResponses.push(writer)
@@ -37,8 +37,7 @@ export default class MjpegProxy {
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
                 'Pragma': 'no-cache',
                 'Content-Type': 'multipart/x-mixed-replace;boundary=' + this.boundary,
-                'Content-Disposition': 'inline; filename="Webcam-live-Air-Alpin"',
-                'X-Robots-Tag': 'noindex'
+                ...customHeaders
             }
         });
         resolve(res)
@@ -56,19 +55,19 @@ export default class MjpegProxy {
     }
 
 
-    proxyRequest() {
+    proxyRequest(customHeaders: HeadersInit = {}) {
         return new Promise((resolve) => {
             const resStream = new TransformStream()
             // There is already another client consuming the MJPEG response
             if (this.globalMjpegResponse) {
-                this._newClient(resStream, resolve)
+                this._newClient(resStream, resolve, customHeaders)
             } else {
                 // Send source MJPEG request
                 request(this.mjpegOptions, (mjpegResponse) => {
                     this.globalMjpegResponse = mjpegResponse
                     this.boundary = extractBoundary(mjpegResponse.headers['content-type'])
 
-                    this._newClient(resStream, resolve)
+                    this._newClient(resStream, resolve, customHeaders)
 
                     mjpegResponse.on('data', async (chunk) => {
                         for (const audienceResponse of this.audienceResponses) {
