@@ -55,7 +55,7 @@ export default class MjpegProxy {
     }
 
 
-    proxyRequest(customHeaders: HeadersInit = {}) {
+    proxyRequest(customHeaders: HeadersInit = {}): Promise<Response> {
         return new Promise((resolve) => {
             const resStream = new TransformStream()
             // There is already another client consuming the MJPEG response

@@ -1,6 +1,6 @@
 {
   "name": "nextjs-mjpeg-proxy",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "MJPEG Proxy for the nextjs app router",
   "license": "MIT",
   "author": {
