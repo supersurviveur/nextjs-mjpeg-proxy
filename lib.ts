@@ -69,14 +69,12 @@ export default class MjpegProxy {
 
                     this._newClient(resStream, resolve, customHeaders)
 
-                    mjpegResponse.on('data', async (chunk) => {
+                    mjpegResponse.on('data', (chunk) => {
                         for (const audienceResponse of this.audienceResponses) {
-                            try {
-                                await audienceResponse.write(chunk)
-                            } catch (Error) {
+                            audienceResponse.write(chunk).catch(() => {
                                 // Exception occured : response aborted, remove this client
                                 this._removeClient(audienceResponse)
-                            }
+                            })
                         }
                     })
                     const end = () => {
